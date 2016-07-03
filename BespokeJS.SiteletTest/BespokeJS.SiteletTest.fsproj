@@ -35,18 +35,60 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Main.fs" />
-    <Content Include="Main.html" />
-    <Content Include="App.config" />
-    <Content Include="packages.config" />
-  </ItemGroup>
   <Target Name="IncludeContent" BeforeTargets="Compile">
     <ItemGroup>
       <Content Include="Content/**/*.*" />
       <Content Include="Scripts/**/*.*" />
     </ItemGroup>
   </Target>
+  <!-- F# targets -->
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '11.0'">
+      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')">
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets')">
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <Import Project="$(FSharpTargetsPath)" />
+  <!-- Web targets -->
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Import Project="..\packages\WebSharper.3.6.14.237\build\WebSharper.targets" Condition="Exists('..\packages\WebSharper.3.6.14.237\build\WebSharper.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\WebSharper.3.6.14.237\build\WebSharper.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\WebSharper.3.6.14.237\build\WebSharper.targets'))" />
+  </Target>
+  <ItemGroup>
+    <Compile Include="Main.fs" />
+    <Content Include="Main.html" />
+    <Content Include="App.config" />
+    <Content Include="packages.config" />
+    <Content Include="Scripts\WebSharper\WebSharper.Control.min.js" />
+    <Content Include="Scripts\WebSharper\WebSharper.Html.Client.js" />
+    <Content Include="Scripts\WebSharper\WebSharper.Html.Client.min.js" />
+    <Content Include="Scripts\WebSharper\WebSharper.Main.js" />
+    <Content Include="Scripts\WebSharper\WebSharper.Main.min.js" />
+    <Content Include="Scripts\WebSharper\WebSharper.UI.Next.js" />
+    <Content Include="Scripts\WebSharper\WebSharper.UI.Next.min.js" />
+    <Content Include="Scripts\WebSharper\WebSharper.Web.js" />
+    <Content Include="Scripts\WebSharper\WebSharper.Web.min.js" />
+    <Content Include="Scripts\WebSharper\BespokeJS.SiteletTest.js" />
+    <Content Include="Scripts\WebSharper\BespokeJS.SiteletTest.min.js" />
+    <Content Include="Scripts\WebSharper\WebSharper.Collections.js" />
+    <Content Include="Scripts\WebSharper\WebSharper.Collections.min.js" />
+    <Content Include="Scripts\WebSharper\WebSharper.Control.js" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="HttpMultipartParser">
       <HintPath>..\packages\WebSharper.Owin.3.6.11.126\lib\net45\HttpMultipartParser.dll</HintPath>
@@ -173,32 +215,4 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
-  <!-- F# targets -->
-  <Choose>
-    <When Condition="'$(VisualStudioVersion)' == '11.0'">
-      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')">
-        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
-      </PropertyGroup>
-    </When>
-    <Otherwise>
-      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets')">
-        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
-      </PropertyGroup>
-    </Otherwise>
-  </Choose>
-  <Import Project="$(FSharpTargetsPath)" />
-  <!-- Web targets -->
-  <PropertyGroup>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-  </PropertyGroup>
-  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
-  <Import Project="..\packages\WebSharper.3.6.14.237\build\WebSharper.targets" Condition="Exists('..\packages\WebSharper.3.6.14.237\build\WebSharper.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\WebSharper.3.6.14.237\build\WebSharper.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\WebSharper.3.6.14.237\build\WebSharper.targets'))" />
-  </Target>
 </Project>
