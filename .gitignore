@@ -3,5 +3,5 @@
 bin
 obj
 packages
-BespokeJS.SiteletTest\Content
-BespokeJS.SiteletTest\Scripts
+BespokeJS.SiteletTest/Content
+BespokeJS.SiteletTest/Scripts
