@@ -1,0 +1,7 @@
+.vs
+.DS_Store
+bin
+obj
+packages
+BespokeJS.SiteletTest\Content
+BespokeJS.SiteletTest\Script
