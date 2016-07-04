@@ -26,7 +26,7 @@ module Client =
     let page hello =
         match hello.Hello with
         | Hello -> text ("Hello, " + hello.Greeting)
-        | Hi -> text ("Hi, " + hello.Greeting)
+        | Hi -> text ("Hi, " + hello.Greeting + " " + (Json.Serialize(hello)))
         | Hey -> text ("Hey, " + hello.Greeting)
 
 module Site =
@@ -38,7 +38,7 @@ module Site =
     let Main =
         let hello = {
             Greeting = "TEST TEST TEST"
-            Hello = Hey
+            Hello = Hi
         }
 
         Sitelet.Sum 
@@ -51,6 +51,11 @@ module Site =
 
 
 module SelfHostedServer =
+    
+    
+    open System.IO
+    open System.Text
+    open System.Web.UI
 
     open global.Owin
     open Microsoft.Owin.Hosting
@@ -61,6 +66,7 @@ module SelfHostedServer =
 
     [<EntryPoint>]
     let Main args =
+
         let rootDirectory, url =
             match args with
             | [| rootDirectory; url |] -> rootDirectory, url
