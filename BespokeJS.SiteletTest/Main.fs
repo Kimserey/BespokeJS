@@ -32,7 +32,8 @@ module Client =
 module Site =
     open Domain
     open WebSharper.UI.Next.Server
-    
+    open System.Text.RegularExpressions
+
     type Index = Templating.Template<"Main.html">
     
     let Main =
@@ -43,10 +44,31 @@ module Site =
 
         Sitelet.Sum 
             [
-                Sitelet.Content "" "" (fun _ -> 
-                    Index.Doc("Hello world", [ client <@ Client.page hello @> ]) |> Content.Page)
+                Sitelet.Content "" "" (fun ctx -> 
+                    
+                    let x = client <@ Client.page hello @>
+                    
+                    let escape (s: string) =
+                        Regex.Replace(s, @"[&<>']",
+                            new MatchEvaluator(fun m ->
+                                match m.Groups.[0].Value.[0] with
+                                | '&'-> "&amp;"
+                                | '<'-> "&lt;"
+                                | '>' -> "&gt;"
+                                | '\'' -> "&#39;"
+                                | _ -> failwith "unreachable"))
+
+                    let meta =
+                        x.Encode(ctx.Metadata, ctx.Json)
+                        |> WebSharper.Core.Json.Encoded.Object
+                        |> ctx.Json.Pack
+                        |> WebSharper.Core.Json.Stringify
+                        |> escape
+
+                    Index.Doc("Hello world", [ x ]) |> Content.Page)
                 Sitelet.Content "test" "test" (fun _ -> Content.Text "test")
-                Sitelet.Content "more" "more" (fun _ -> Content.Text "more")
+                Sitelet.Content "more" "more" (fun ctx -> 
+                    Content.Text "more")
             ]
 
 
