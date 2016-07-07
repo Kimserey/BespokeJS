@@ -1,4 +1,5 @@
-﻿namespace Singapore.Ui.Common
+﻿namespace BespokeJS
+
 open System
 
 module Compiler =
@@ -153,9 +154,15 @@ module Main =
     open System
     open System.IO
     open System.Text
+    open System.Text.RegularExpressions
     open Microsoft.FSharp.Compiler.SourceCodeServices
     open Microsoft.FSharp.Compiler.Interactive.Shell
-    
+    open BespokeJS.Library.Domain
+    open WebSharper
+    open WebSharper.UI.Next
+    open WebSharper.UI.Next.Html
+    open WebSharper.UI.Next.Server
+
     type FsiEvaluationSession with
         member x.ReferenceDll filename = x.EvalInteraction("#r @\"" + filename + "\"")
         member x.ReferenceDlls filenames = filenames |> Seq.iter x.ReferenceDll
@@ -173,20 +180,53 @@ module Main =
         use fsiSession = FsiEvaluationSession.Create(fsiConfig, allArgs, inStream, outStream, errStream, collectible = false)
 
         fsiSession.ReferenceDll (Path.Combine (AppDomain.CurrentDomain.BaseDirectory, "BespokeJS.Library.dll"))
+        fsiSession.ReferenceDll (Path.Combine (AppDomain.CurrentDomain.BaseDirectory, "Compiler.exe"))
 
         // Run the main script.
         fsiSession.EvalScript( "configs/moon/Configuration.Moon.fsx")
 
         // Now eval the expression to, presumably, retrieve some result object that the main script computed.
-        match fsiSession.EvalExpression("Configuration.ScriptRoot.config") with
-        | Some v -> 
-            let x = v.ReflectionValue :?> 'expected
-            ()
+        match fsiSession.EvalExpression("Configuration.ScriptRoot.config, BespokeJS.Compiler.Warp.compileAndUnpack \"httproot\"") with
+        | Some v -> v.ReflectionValue :?> 'expected
         | None -> failwith "Coudln't evaluate config."
 
     [<EntryPoint>]
     let main argv = 
-        printfn "%A" argv
-        let x = compile<BespokeJS.Library.Domain.Configuration>()
 
+        let (cfg, metadata) = compile<Configuration * WebSharper.Core.Metadata.Info>()
+
+        // extract metadata from x
+        let x = client <@ BespokeJS.Library.Client.main cfg @>
+                    
+        let escape (s: string) =
+            Regex.Replace(s, @"[&<>']",
+                new MatchEvaluator(fun m ->
+                    match m.Groups.[0].Value.[0] with
+                    | '&'-> "&amp;"
+                    | '<'-> "&lt;"
+                    | '>' -> "&gt;"
+                    | '\'' -> "&#39;"
+                    | _ -> failwith "unreachable"))
+        
+        let json = Core.Json.Provider.Create()
+
+        let meta =
+            x.Encode(metadata, json)
+                    
+        let identifier = 
+            meta
+            |> List.head
+            |> fst
+
+        let escapedMeta =
+            meta
+            |> WebSharper.Core.Json.Encoded.Object
+            |> json.Pack
+            |> WebSharper.Core.Json.Stringify
+            |> escape
+        
+        printfn "%s" identifier
+        printfn "%s" escapedMeta
+
+        Console.ReadKey() |> ignore
         0 // return an integer exit code

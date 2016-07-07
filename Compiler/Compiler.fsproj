@@ -115,7 +115,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WebSharper.Collections">
       <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.Collections.dll</HintPath>
       <Private>True</Private>
@@ -154,6 +157,14 @@
     </Reference>
     <Reference Include="WebSharper.Sitelets">
       <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.Sitelets.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebSharper.UI.Next">
+      <HintPath>..\packages\WebSharper.UI.Next.3.6.15.211\lib\net40\WebSharper.UI.Next.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebSharper.UI.Next.Templating">
+      <HintPath>..\packages\WebSharper.UI.Next.3.6.15.211\lib\net40\WebSharper.UI.Next.Templating.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WebSharper.Web">
