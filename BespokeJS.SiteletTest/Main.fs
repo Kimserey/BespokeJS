@@ -46,6 +46,7 @@ module Site =
             [
                 Sitelet.Content "" "" (fun ctx -> 
                     
+                    // extract metadata from x
                     let x = client <@ Client.page hello @>
                     
                     let escape (s: string) =
