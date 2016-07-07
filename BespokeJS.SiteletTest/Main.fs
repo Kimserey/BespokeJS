@@ -61,10 +61,19 @@ module Site =
 
                     let meta =
                         x.Encode(ctx.Metadata, ctx.Json)
+                    
+                    let i = 
+                        meta
+                        |> List.head
+                        |> fst
+
+                    let meta'=
+                        meta
                         |> WebSharper.Core.Json.Encoded.Object
                         |> ctx.Json.Pack
                         |> WebSharper.Core.Json.Stringify
                         |> escape
+                   
 
                     Index.Doc("Hello world", [ x ]) |> Content.Page)
                 Sitelet.Content "test" "test" (fun _ -> Content.Text "test")
