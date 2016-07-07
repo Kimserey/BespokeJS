@@ -6,18 +6,6 @@ open WebSharper.UI.Next
 open WebSharper.UI.Next.Html
 open WebSharper.Sitelets
 
-
-[<JavaScript>]
-module Domain =
-    type Test = {
-        Greeting: string
-        Hello: Hello
-    }
-    and Hello =
-        | Hello
-        | Hi
-        | Hey
-
 [<JavaScript>]
 module Client =
     open Domain
@@ -60,7 +48,7 @@ module Site =
                                 | _ -> failwith "unreachable"))
 
                     let meta =
-                        x.Encode(ctx.Metadata, ctx.Json)
+                        x.Encode(ctx.Metadata, WebSharper.Core.Json.Provider.Create())
                     
                     let i = 
                         meta

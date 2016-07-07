@@ -7,6 +7,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BespokeJS.SiteletTest", "Be
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Compiler", "Compiler\Compiler.fsproj", "{2E2155FC-047B-4A30-AB9E-351EC67A7A95}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BespokeJS.Library", "BespokeJS.Library\BespokeJS.Library.fsproj", "{CF4E3544-6421-44E4-AA46-529B8AFB3041}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2E2155FC-047B-4A30-AB9E-351EC67A7A95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E2155FC-047B-4A30-AB9E-351EC67A7A95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E2155FC-047B-4A30-AB9E-351EC67A7A95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF4E3544-6421-44E4-AA46-529B8AFB3041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF4E3544-6421-44E4-AA46-529B8AFB3041}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF4E3544-6421-44E4-AA46-529B8AFB3041}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF4E3544-6421-44E4-AA46-529B8AFB3041}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

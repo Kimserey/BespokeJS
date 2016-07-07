@@ -149,24 +149,44 @@ module Compiler =
                 asm.Info
             | None -> failwith "Failed to compile with WebSharper."
 
-module Bundle =
-    open WebSharper
-
-    let test asm =
-        let cfg =
-            {
-                Compiler.BundleCommand.Config.Create() with
-                    AssemblyPaths = asm
-                    AppConfigFile = None
-                    FileName = "test.js"
-                    OutputDirectory = ""
-            }
-        let env = Compiler.Commands.Environment.Create()
-        Compiler.BundleCommand.Instance.Execute(env, cfg) |> ignore
-
 module Main =
+    open System
+    open System.IO
+    open System.Text
+    open Microsoft.FSharp.Compiler.SourceCodeServices
+    open Microsoft.FSharp.Compiler.Interactive.Shell
+    
+    type FsiEvaluationSession with
+        member x.ReferenceDll filename = x.EvalInteraction("#r @\"" + filename + "\"")
+        member x.ReferenceDlls filenames = filenames |> Seq.iter x.ReferenceDll
+    
+    let compile<'expected>() =
+        let sbOut = new StringBuilder()
+        let sbErr = new StringBuilder()
+        let inStream = new StringReader("")
+        let outStream = new StringWriter(sbOut)
+        let errStream = new StringWriter(sbErr)
+
+        let allArgs = [|"--noninteractive"; "--define:HOSTED" |]
+
+        let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
+        use fsiSession = FsiEvaluationSession.Create(fsiConfig, allArgs, inStream, outStream, errStream, collectible = false)
+
+        fsiSession.ReferenceDll (Path.Combine (AppDomain.CurrentDomain.BaseDirectory, "BespokeJS.Library.dll"))
+
+        // Run the main script.
+        fsiSession.EvalScript( "configs/moon/Configuration.Moon.fsx")
+
+        // Now eval the expression to, presumably, retrieve some result object that the main script computed.
+        match fsiSession.EvalExpression("Configuration.ScriptRoot.config") with
+        | Some v -> 
+            let x = v.ReflectionValue :?> 'expected
+            ()
+        | None -> failwith "Coudln't evaluate config."
+
     [<EntryPoint>]
     let main argv = 
-        Bundle.test()
         printfn "%A" argv
+        let x = compile<BespokeJS.Library.Domain.Configuration>()
+
         0 // return an integer exit code
